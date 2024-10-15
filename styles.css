@@ -47,6 +47,7 @@ button:hover {
   border-radius: 10px;
   justify-content: left;
   align-items: left;
+  transition: transform 0.3s ease-in-out;
 }
 
 .blog-posts:hover {
