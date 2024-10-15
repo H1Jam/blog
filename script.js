@@ -12,8 +12,6 @@ function fetchPersonsData(url) {
         .catch(error => console.error('Error fetching data:', error));
 }
 
-// Example URL (replace with your actual URL)
 const dataUrl = 'https://hjam.ca/wp-json/wp/v2/posts?per_page=10&context=embed';
 
-// Fetch data when the script loads
 fetchPersonsData(dataUrl);
