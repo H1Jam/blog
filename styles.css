@@ -49,8 +49,6 @@ button:hover {
   align-items: left;
 }
 
-
-/* hover the blog post maks it bigger by 5% */
 .blog-posts:hover {
   transform: scale(1.05);
 }
