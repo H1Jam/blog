@@ -6,7 +6,7 @@ function fetchPersonsData(url) {
         .then(data => {
             console.log('posts:', data);
             data.forEach(post => {
-                apiResultDisplay.innerHTML += `<div class="blog-posts"><b>${post.title.rendered}</b><p>${post.excerpt.rendered}</p></div>`;
+                apiResultDisplay.innerHTML += `<div class="blog-posts"><div class="blog-posts-header">${post.title.rendered}</div>${post.excerpt.rendered}<div>${post.date}</div></div>`;
             });
         })
         .catch(error => console.error('Error fetching data:', error));
