@@ -19,6 +19,10 @@ function fetchPersonsData(url) {
                     </div>
                 </div>`;
             });
+
+            if (window.hljs) {
+                window.hljs.highlightAll();
+            }
         })
         .catch(error => console.error('Error fetching data:', error));
 }
@@ -37,3 +41,7 @@ function formatDate(dateString) {
 const dataUrl = 'https://hjam.ca/wp-json/wp/v2/posts';
 
 fetchPersonsData(dataUrl);
+
+if (window.hljs) {
+    window.hljs.highlightAll();
+}
