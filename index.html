@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Learning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,10 +20,30 @@
                 <p class="bio-text">Front-end tinkerer and lifelong learner sharing quick notes on code, creativity, and the tools that keep me curious.</p>
                 <p class="bio-text">When I am not building demos, you will find me exploring design systems and capturing ideas in my notebook.</p>
             </aside>
-            <div id="posts" class="blog-posts-list"></div>
+            <div class="main-feed">
+                <section class="code-card" aria-label="Featured code snippet">
+                    <div class="code-card-header">
+                        <h2 class="code-card-title">Featured Snippet</h2>
+                        <span class="code-card-label">JavaScript</span>
+                    </div>
+                    <p class="code-card-description">This helper keeps WordPress post dates human friendly when rendering the feed.</p>
+                    <pre><code class="language-js">function formatDate(dateString) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+console.log(formatDate('2021-04-02T13:53:23'));
+// ➜ April 2, 2021</code></pre>
+                </section>
+                <div id="posts" class="blog-posts-list"></div>
+            </div>
         </div>
     </div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
