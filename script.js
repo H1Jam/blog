@@ -47,6 +47,10 @@ if (window.hljs) {
 }
 
 const queryString = window.location.search;
+console.log('Blog URL Query String:', queryString);
+
 const urlParams = new URLSearchParams(queryString);
+console.log('Blog URL Parameters:', urlParams);
+
 const postId = urlParams.get('postId');
 console.log('Post ID from URL:', postId);
