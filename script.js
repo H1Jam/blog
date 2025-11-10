@@ -45,3 +45,8 @@ fetchPersonsData(dataUrl);
 if (window.hljs) {
     window.hljs.highlightAll();
 }
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const postId = urlParams.get('postId');
+console.log('Post ID from URL:', postId);
