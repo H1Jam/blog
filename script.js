@@ -105,11 +105,11 @@ if (window.hljs) {
 
 initializeCopyButtons();
 
-const queryString = window.location.search;
-console.log('Blog URL Query String:', queryString);
+// const queryString = window.location.search;
+// console.log('Blog URL Query String:', queryString);
 
-const urlParams = new URLSearchParams(queryString);
-console.log('Blog URL Parameters:', urlParams);
+// const urlParams = new URLSearchParams(queryString);
+// console.log('Blog URL Parameters:', urlParams);
 
-const postId = urlParams.get('postId');
-console.log('Post ID from URL:', postId);
+// const postId = urlParams.get('postId');
+// console.log('Post ID from URL:', postId);
