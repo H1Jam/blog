@@ -1,4 +1,11 @@
 const apiResultDisplay = document.getElementById('posts');
+const postsLoading = document.getElementById('posts-loading');
+
+// Set footer year
+const footerYear = document.getElementById('footer-year');
+if (footerYear) {
+    footerYear.textContent = new Date().getFullYear();
+}
 
 function initializeCopyButtons() {
     const copyButtons = document.querySelectorAll('[data-copy-target]');
@@ -57,8 +64,15 @@ function initializeCopyButtons() {
 
 function fetchPersonsData(url) {
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            if (postsLoading) postsLoading.remove();
+
             console.log('posts:', data);
             data.forEach(post => {
                 apiResultDisplay.innerHTML += 
@@ -81,7 +95,12 @@ function fetchPersonsData(url) {
 
             initializeCopyButtons();
         })
-        .catch(error => console.error('Error fetching data:', error));
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            if (postsLoading) {
+                postsLoading.innerHTML = `<div class="posts-error">Could not load posts. Please try again later.</div>`;
+            }
+        });
 }
 
 // api gives us something like this "2021-04-02T13:53:23" 
