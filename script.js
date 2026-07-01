@@ -137,6 +137,17 @@ function showPost(index) {
     postView.querySelector('.post-article-meta').textContent = `${post.author} · ${formatDate(post.date)}`;
     postView.querySelector('.post-article-content').innerHTML = post.content;
 
+    // Rewrite root-relative image paths (e.g. /images/foo.jpg) so they resolve
+    // correctly under any subdirectory host (like GitHub Pages /repo-name/)
+    // without hardcoding the URL.
+    const _base = new URL('.', document.baseURI).href;
+    postView.querySelectorAll('.post-article-content img').forEach(img => {
+        const src = img.getAttribute('src');
+        if (src && src.startsWith('/') && !src.startsWith('//')) {
+            img.setAttribute('src', new URL(src.slice(1), _base).href);
+        }
+    });
+
     document.querySelector('.code-card').hidden = true;
     document.querySelector('.posts-section').hidden = true;
     postView.hidden = false;
