@@ -114,7 +114,7 @@ function formatDate(dateString) {
     });
 }
 
-const dataUrl = './blog_posts.json';
+const dataUrl = new URL('blog_posts.json', document.baseURI).href;
 
 fetchPersonsData(dataUrl);
 
