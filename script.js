@@ -9,6 +9,10 @@ if (footerYear) {
 
 let allPosts = [];
 
+// Capture any incoming hash BEFORE replaceState clears it, so deep links
+// like #post-6 still work after the async JSON fetch completes.
+const _initialHash = window.location.hash;
+
 // Seed the history stack so the browser back button always returns to the posts list
 history.replaceState({ view: 'list' }, '', window.location.pathname + window.location.search);
 
@@ -195,9 +199,14 @@ function fetchPersonsData(url) {
             if (postsLoading) postsLoading.remove();
             allPosts = data;
             renderPosts();
-            // Support deep-linking directly to a post via URL hash (e.g. #post-0)
-            const match = window.location.hash.match(/^#post-(\d+)$/);
-            if (match) showPost(parseInt(match[1]));
+            // Support deep-linking via URL hash (e.g. /blog/#post-6).
+            // Use _initialHash because replaceState already cleared window.location.hash.
+            const match = _initialHash.match(/^#post-(\d+)$/);
+            if (match) {
+                const index = parseInt(match[1]);
+                history.pushState({ view: 'post', index }, '', `#post-${index}`);
+                showPost(index);
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error);
