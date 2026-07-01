@@ -7,6 +7,11 @@ if (footerYear) {
     footerYear.textContent = new Date().getFullYear();
 }
 
+let allPosts = [];
+
+// Seed the history stack so the browser back button always returns to the posts list
+history.replaceState({ view: 'list' }, '', window.location.pathname + window.location.search);
+
 function initializeCopyButtons() {
     const copyButtons = document.querySelectorAll('[data-copy-target]');
 
@@ -62,6 +67,111 @@ function initializeCopyButtons() {
     });
 }
 
+function addCodeCopyButtons(container) {
+    container.querySelectorAll('pre').forEach(pre => {
+        if (pre.parentElement.classList.contains('code-snippet')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-snippet';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const btn = document.createElement('button');
+        btn.className = 'code-copy-btn';
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Copy code');
+        btn.textContent = 'Copy';
+        wrapper.insertBefore(btn, pre);
+
+        btn.addEventListener('click', async () => {
+            const codeToCopy = pre.innerText;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(codeToCopy);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = codeToCopy;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.focus();
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                }
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 1600);
+            } catch (err) {
+                console.error('Unable to copy code', err);
+                btn.textContent = 'Error';
+                setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+            }
+        });
+    });
+}
+
+function getExcerpt(htmlContent) {
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlContent;
+    const firstP = temp.querySelector('p');
+    return firstP ? firstP.outerHTML : '';
+}
+
+function showPostsList() {
+    document.querySelector('.code-card').hidden = false;
+    document.querySelector('.posts-section').hidden = false;
+    document.getElementById('post-view').hidden = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showPost(index) {
+    const post = allPosts[index];
+    if (!post) return;
+
+    const postView = document.getElementById('post-view');
+    postView.querySelector('.post-article-title').textContent = post.title;
+    postView.querySelector('.post-article-meta').textContent = `${post.author} · ${formatDate(post.date)}`;
+    postView.querySelector('.post-article-content').innerHTML = post.content;
+
+    document.querySelector('.code-card').hidden = true;
+    document.querySelector('.posts-section').hidden = true;
+    postView.hidden = false;
+
+    if (window.hljs) window.hljs.highlightAll();
+    addCodeCopyButtons(postView.querySelector('.post-article-content'));
+    initializeCopyButtons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderPosts() {
+    allPosts.forEach((post, index) => {
+        apiResultDisplay.innerHTML +=
+        `<div class="blog-posts">
+            <div class="blog-posts-header">${post.title}</div>
+            <div class="blog-posts-content">${getExcerpt(post.content)}</div>
+            <div class="blog-posts-footer">
+                <span>${formatDate(post.date)}</span>
+                <button class="read-more-btn" data-post-index="${index}">Read More →</button>
+            </div>
+        </div>`;
+    });
+
+    document.querySelectorAll('.read-more-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.postIndex);
+            history.pushState({ view: 'post', index }, '', `#post-${index}`);
+            showPost(index);
+        });
+    });
+
+    if (window.hljs) window.hljs.highlightAll();
+    initializeCopyButtons();
+}
+
 function fetchPersonsData(url) {
     fetch(url)
         .then(response => {
@@ -72,28 +182,11 @@ function fetchPersonsData(url) {
         })
         .then(data => {
             if (postsLoading) postsLoading.remove();
-
-            console.log('posts:', data);
-            data.forEach(post => {
-                apiResultDisplay.innerHTML += 
-                `<div class="blog-posts">
-                    <div class="blog-posts-header">
-                        ${post.title}
-                    </div>
-                    <div class="blog-posts-content">
-                        ${post.content}
-                    </div>
-                    <div class="blog-posts-footer">
-                        ${formatDate(post.date)}
-                    </div>
-                </div>`;
-            });
-
-            if (window.hljs) {
-                window.hljs.highlightAll();
-            }
-
-            initializeCopyButtons();
+            allPosts = data;
+            renderPosts();
+            // Support deep-linking directly to a post via URL hash (e.g. #post-0)
+            const match = window.location.hash.match(/^#post-(\d+)$/);
+            if (match) showPost(parseInt(match[1]));
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -114,21 +207,17 @@ function formatDate(dateString) {
     });
 }
 
+document.getElementById('post-back-btn').addEventListener('click', () => {
+    history.back();
+});
+
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.view === 'post') {
+        showPost(event.state.index);
+    } else {
+        showPostsList();
+    }
+});
+
 const dataUrl = new URL('blog_posts.json', document.baseURI).href;
-
 fetchPersonsData(dataUrl);
-
-if (window.hljs) {
-    window.hljs.highlightAll();
-}
-
-initializeCopyButtons();
-
-// const queryString = window.location.search;
-// console.log('Blog URL Query String:', queryString);
-
-// const urlParams = new URLSearchParams(queryString);
-// console.log('Blog URL Parameters:', urlParams);
-
-// const postId = urlParams.get('postId');
-// console.log('Post ID from URL:', postId);
