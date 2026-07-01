@@ -78,10 +78,10 @@ function fetchPersonsData(url) {
                 apiResultDisplay.innerHTML += 
                 `<div class="blog-posts">
                     <div class="blog-posts-header">
-                        ${post.title.rendered}
+                        ${post.title}
                     </div>
                     <div class="blog-posts-content">
-                        ${post.excerpt.rendered}
+                        ${post.content}
                     </div>
                     <div class="blog-posts-footer">
                         ${formatDate(post.date)}
@@ -114,7 +114,7 @@ function formatDate(dateString) {
     });
 }
 
-const dataUrl = 'https://hjam.ca/wp-json/wp/v2/posts';
+const dataUrl = './blog_posts.json';
 
 fetchPersonsData(dataUrl);
 
